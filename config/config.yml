@@ -1,0 +1,23 @@
+paths:
+  gff_merged: "data/raw/Merged_GutMetaNet_Annotations.tsv"
+  gff_dir: "data/raw/DB.representative_genome.gff"
+  imme_dir: "data/raw/ImmeDB"
+  regen_kos: "data/external/regen_kos.tsv"
+  processed_dir: "data/processed"
+  network_dir: "data/processed/network"
+  figures_dir: "figures"
+umap:
+  n_neighbors: 15
+  min_dist: 0.1
+  metric: "cosine"
+  n_threads: 4
+  svd_components: 20
+  subsample_rows: 50000
+network:
+  ko_min_prevalence: 50
+  jaccard_threshold: 0.15
+pca:
+  top_categories_keep: 8
+  export_width: 16
+  export_height: 8
+  dpi: 600
