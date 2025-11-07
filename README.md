@@ -1,18 +1,21 @@
-The Regenerative Architecture of the Human Gut Microbiome
+# 🧬 The Regenerative Architecture of the Human Gut Microbiome
+### *A Systems-Level Atlas of Functional Resilience and Gene Mobility*
 
-A Systems-Level Atlas of Functional Resilience and Gene Mobility
+---
 
-📖 Overview
+## 📖 Overview
+This repository contains all scripts, data structures, and figures associated with the manuscript:  
+**“The Regenerative Architecture of the Human Gut Microbiome: A Systems-Level Atlas of Functional Resilience and Gene Mobility.”**
 
-This repository contains all scripts, data structures, and figures associated with the manuscript:
-“The Regenerative Architecture of the Human Gut Microbiome: A Systems-Level Atlas of Functional Resilience and Gene Mobility.”
+The study develops a **quantitative and visual framework** to map microbial regenerative capacity, functional gene networks, and ecological gradients using large-scale metagenomic datasets.
 
-The study develops a quantitative and visual framework to map microbial regenerative capacity, functional gene networks, and ecological gradients using large-scale metagenomic datasets.
+---
 
-📂 Repository Structure
+## 📂 Repository Structure
+```
 gut-regeneration-atlas/
 │
-├── data/      # Example and raw input files
+├── data/                        # Example and raw input files
 │   ├── Merged_GutMetaNet_Annotations.tsv
 │   ├── Merged_GutMetaNet_MGE.tsv
 │   └── DB.representative_genome.gff/
@@ -37,41 +40,67 @@ gut-regeneration-atlas/
 │
 ├── README.md                    # Current file
 └── LICENSE
+```
 
-🧩 Analyses Summary
-Analysis	Focus	Output	Script
-1	Functional Galaxy Map	UMAP-based functional embedding of genomes	01_Functional_Galaxy_Map.R
-2	Regenerative Co-Occurrence Network	KO–KO functional coupling & modularity	02_Regenerative_Cooccurrence_Network.R
-3	Regenerative Gradient Map	PCA-based ecological gradient analysis	03_Regenerative_Potential_Gradient.R
+---
 
-⚙️ Requirements
+## 🧩 Analyses Summary
+| Analysis | Focus | Output | Script |
+|-----------|--------|---------|---------|
+| **1** | Functional Galaxy Map | UMAP-based functional embedding of genomes | `01_Functional_Galaxy_Map.R` |
+| **2** | Regenerative Co-Occurrence Network | KO–KO functional coupling & modularity | `02_Regenerative_Cooccurrence_Network.R` |
+| **3** | Regenerative Gradient Map | PCA-based ecological gradient analysis | `03_Regenerative_Potential_Gradient.R` |
 
-R ≥ 4.3
+---
 
-Recommended packages:
-tidyverse, Matrix, proxyC, igraph, ggplot2, plotly, viridis, ComplexHeatmap, FactoMineR, factoextra, MASS.
+## ⚙️ Requirements
+- **R ≥ 4.3**
 
-To install dependencies:
+**Recommended Packages:**  
+`tidyverse`, `Matrix`, `proxyC`, `igraph`, `ggplot2`, `plotly`, `viridis`, `ComplexHeatmap`, `FactoMineR`, `factoextra`, `MASS`.
 
+Install dependencies:
+```r
 install.packages(c("tidyverse", "Matrix", "proxyC", "igraph", "ggplot2", 
                    "viridis", "MASS", "factoextra", "FactoMineR"))
+```
 
-🚀 How to Reproduce
+---
 
-Clone this repository:
+## 🚀 How to Reproduce
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/Damilola-max/gut-regeneration-atlas.git
+   cd gut-regeneration-atlas
+   ```
+2. Open **R** or **RStudio**.
+3. Load the dataset from `/data/`.
+4. Run analyses sequentially:
+   ```r
+   source("scripts/01_Functional_Galaxy_Map.R")
+   source("scripts/02_Regenerative_Cooccurrence_Network.R")
+   source("scripts/03_Regenerative_Potential_Gradient.R")
+   ```
+5. Generated figures will appear in `/figures/`.
 
-git clone https://github.com/Damilola-max/gut-regeneration-atlas.git
-cd gut-regeneration-atlas
+---
 
+## 📊 Outputs
+- **Functional Galaxy Map:** Unsupervised embedding of genomes in functional space.  
+- **Co-Occurrence Network:** Modular graph of co-adapted regenerative genes.  
+- **Gradient Map:** PCA projection showing ecological distribution of regenerative potential.  
 
-Open R or RStudio.
+---
 
-Load the dataset in /data/.
+## 🧠 Citation
+If you use this repository, please cite:
+> Olayemi, D.M. *et al.* (2025). *The Regenerative Architecture of the Human Gut Microbiome: A Systems-Level Atlas of Functional Resilience and Gene Mobility.*
 
-Run analyses in sequence:
+---
 
-source("scripts/01_Functional_Galaxy_Map.R")
-source("scripts/02_Regenerative_Cooccurrence_Network.R")
-source("scripts/03_Regenerative_Potential_Gradient.R")
+## 🪙 Funding & Notes
+- Supported by the **University of Ilorin**  
+- Analyses performed in **R (macOS)**  
+- Target journal: **The ISME Journal (Q1, 70% APC waiver for Nigeria)**  
 
-Generated figures will appear in /figures/.
+---
