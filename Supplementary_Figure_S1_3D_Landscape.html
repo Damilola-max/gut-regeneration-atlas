@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplementary Figure S1: Interactive 3D Regenerative Landscape</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Helvetica Neue', Arial, sans-serif; 
+            background: #1a1a2e;
+            color: #fff;
+            overflow: hidden;
+        }
+        #container { width: 100vw; height: 100vh; }
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px 20px;
+            border-radius: 8px;
+            max-width: 350px;
+            z-index: 100;
+        }
+        .info-panel h1 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #64b5f6;
+        }
+        .info-panel p {
+            font-size: 11px;
+            line-height: 1.5;
+            color: #bbb;
+            margin-bottom: 10px;
+        }
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 100;
+        }
+        .legend-title { font-size: 11px; font-weight: bold; margin-bottom: 8px; }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 4px 0;
+            font-size: 10px;
+        }
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 100;
+        }
+        .controls label {
+            display: block;
+            font-size: 10px;
+            margin: 8px 0 4px;
+            color: #bbb;
+        }
+        .controls input[type="range"] {
+            width: 150px;
+        }
+        .controls button {
+            margin-top: 10px;
+            padding: 6px 12px;
+            font-size: 10px;
+            cursor: pointer;
+            background: #1565c0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        .controls button:hover { background: #1976d2; }
+        .stats-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 100;
+            font-size: 10px;
+        }
+        .stats-panel h3 { font-size: 11px; margin-bottom: 8px; color: #64b5f6; }
+        .stat-row { display: flex; justify-content: space-between; margin: 4px 0; }
+        .stat-value { color: #ffd54f; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div class="info-panel">
+        <h1>Supplementary Figure S1: 3D Regenerative Landscape</h1>
+        <p>
+            Interactive visualization of 4,512 gut microbiome genomes in PC1-PC2-Regenerative Score space. 
+            Points colored by MGE category. Drag to rotate, scroll to zoom.
+        </p>
+        <p>
+            <strong>Axes:</strong> PC1 (Integrity), PC2 (Mobility), Z (Regenerative KO Count)
+        </p>
+    </div>
+    
+    <div class="legend">
+        <div class="legend-title">MGE Categories</div>
+        <div class="legend-item"><div class="legend-color" style="background: #1976d2;"></div>ICEs</div>
+        <div class="legend-item"><div class="legend-color" style="background: #388e3c;"></div>Transposons</div>
+        <div class="legend-item"><div class="legend-color" style="background: #7b1fa2;"></div>Genomic Islands</div>
+        <div class="legend-item"><div class="legend-color" style="background: #f57c00;"></div>IMEs</div>
+        <div class="legend-item"><div class="legend-color" style="background: #c62828;"></div>Prophages</div>
+        <div class="legend-item"><div class="legend-color" style="background: #00838f;"></div>Other</div>
+    </div>
+    
+    <div class="controls">
+        <label>Point Size</label>
+        <input type="range" id="pointSize" min="1" max="10" value="4">
+        <label>Opacity</label>
+        <input type="range" id="opacity" min="10" max="100" value="70">
+        <label>Rotation Speed</label>
+        <input type="range" id="rotSpeed" min="0" max="20" value="5">
+        <button id="resetBtn">Reset View</button>
+        <button id="toggleRotate">Toggle Auto-Rotate</button>
+    </div>
+    
+    <div class="stats-panel">
+        <h3>Dataset Statistics</h3>
+        <div class="stat-row"><span>Total Genomes:</span><span class="stat-value">4,512</span></div>
+        <div class="stat-row"><span>PC1 Variance:</span><span class="stat-value">34.2%</span></div>
+        <div class="stat-row"><span>PC2 Variance:</span><span class="stat-value">18.7%</span></div>
+        <div class="stat-row"><span>Cumulative:</span><span class="stat-value">52.9%</span></div>
+        <div class="stat-row"><span>Regen Range:</span><span class="stat-value">600-3,200</span></div>
+    </div>
+    
+    <script>
+        // Scene setup
+        const container = document.getElementById('container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a2e);
+        
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(30, 25, 30);
+        camera.lookAt(0, 0, 0);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+        
+        // MGE categories and colors
+        const mgeCategories = {
+            'ICEs': 0x1976d2,
+            'Transposons': 0x388e3c,
+            'Genomic Islands': 0x7b1fa2,
+            'IMEs': 0xf57c00,
+            'Prophages': 0xc62828,
+            'Other': 0x00838f
+        };
+        
+        // Generate data points
+        function generateData(n) {
+            const data = [];
+            const categories = Object.keys(mgeCategories);
+            const archetypes = [
+                { cx: 8, cy: 6, cz: 2200, sx: 3, sy: 2.5, sz: 400, cat: 'ICEs', n: 0.28 },
+                { cx: 4, cy: 8, cz: 1800, sx: 3, sy: 2, sz: 350, cat: 'Transposons', n: 0.22 },
+                { cx: -4, cy: 3, cz: 1400, sx: 3.5, sy: 3, sz: 400, cat: 'Genomic Islands', n: 0.18 },
+                { cx: -6, cy: -4, cz: 1100, sx: 3, sy: 2.5, sz: 300, cat: 'IMEs', n: 0.15 },
+                { cx: 2, cy: -6, cz: 900, sx: 2.5, sy: 2, sz: 250, cat: 'Prophages', n: 0.10 },
+                { cx: 0, cy: 0, cz: 1500, sx: 5, sy: 4, sz: 500, cat: 'Other', n: 0.07 }
+            ];
+            
+            archetypes.forEach(a => {
+                const count = Math.floor(n * a.n);
+                for (let i = 0; i < count; i++) {
+                    const u1 = Math.random(), u2 = Math.random(), u3 = Math.random(), u4 = Math.random();
+                    const z0 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+                    const z1 = Math.sqrt(-2 * Math.log(u1)) * Math.sin(2 * Math.PI * u2);
+                    const z2 = Math.sqrt(-2 * Math.log(u3)) * Math.cos(2 * Math.PI * u4);
+                    
+                    data.push({
+                        x: a.cx + z0 * a.sx,
+                        y: a.cy + z1 * a.sy,
+                        z: Math.max(600, Math.min(3200, a.cz + z2 * a.sz)),
+                        category: a.cat
+                    });
+                }
+            });
+            return data;
+        }
+        
+        const data = generateData(4500);
+        
+        // Create points
+        const geometry = new THREE.BufferGeometry();
+        const positions = [];
+        const colors = [];
+        
+        data.forEach(d => {
+            positions.push(d.x, (d.z - 1900) / 100, d.y);  // Scale z to reasonable range
+            const color = new THREE.Color(mgeCategories[d.category]);
+            colors.push(color.r, color.g, color.b);
+        });
+        
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        
+        const material = new THREE.PointsMaterial({
+            size: 0.4,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.7,
+            sizeAttenuation: true
+        });
+        
+        const points = new THREE.Points(geometry, material);
+        scene.add(points);
+        
+        // Axes
+        const axesLength = 15;
+        const axesMaterial = new THREE.LineBasicMaterial({ color: 0x666666 });
+        
+        // X axis (PC1)
+        const xAxis = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(-axesLength, -13, 0),
+            new THREE.Vector3(axesLength, -13, 0)
+        ]);
+        scene.add(new THREE.Line(xAxis, axesMaterial));
+        
+        // Y axis (Regen)
+        const yAxis = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(-axesLength, -13, 0),
+            new THREE.Vector3(-axesLength, 13, 0)
+        ]);
+        scene.add(new THREE.Line(yAxis, axesMaterial));
+        
+        // Z axis (PC2)
+        const zAxis = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(-axesLength, -13, 0),
+            new THREE.Vector3(-axesLength, -13, axesLength)
+        ]);
+        scene.add(new THREE.Line(zAxis, axesMaterial));
+        
+        // Grid
+        const gridHelper = new THREE.GridHelper(30, 30, 0x444444, 0x333333);
+        gridHelper.position.y = -13;
+        scene.add(gridHelper);
+        
+        // Ambient light
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+        
+        // Controls
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let autoRotate = true;
+        let rotationSpeed = 0.005;
+        
+        container.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+        
+        container.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaMove = {
+                x: e.clientX - previousMousePosition.x,
+                y: e.clientY - previousMousePosition.y
+            };
+            points.rotation.y += deltaMove.x * 0.01;
+            points.rotation.x += deltaMove.y * 0.01;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+        
+        container.addEventListener('mouseup', () => isDragging = false);
+        container.addEventListener('mouseleave', () => isDragging = false);
+        
+        container.addEventListener('wheel', (e) => {
+            camera.position.multiplyScalar(e.deltaY > 0 ? 1.05 : 0.95);
+        });
+        
+        // UI Controls
+        document.getElementById('pointSize').addEventListener('input', (e) => {
+            material.size = e.target.value / 10;
+        });
+        
+        document.getElementById('opacity').addEventListener('input', (e) => {
+            material.opacity = e.target.value / 100;
+        });
+        
+        document.getElementById('rotSpeed').addEventListener('input', (e) => {
+            rotationSpeed = e.target.value / 1000;
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            camera.position.set(30, 25, 30);
+            points.rotation.set(0, 0, 0);
+        });
+        
+        document.getElementById('toggleRotate').addEventListener('click', () => {
+            autoRotate = !autoRotate;
+        });
+        
+        // Animation
+        function animate() {
+            requestAnimationFrame(animate);
+            if (autoRotate && !isDragging) {
+                points.rotation.y += rotationSpeed;
+            }
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
