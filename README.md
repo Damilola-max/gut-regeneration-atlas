@@ -11,39 +11,6 @@ The study develops a **quantitative and visual framework** to map microbial rege
 
 ---
 
-## 📂 Repository Structure
-```
-gut-regeneration-atlas/
-│
-├── data/                        # Example and raw input files
-│   ├── Merged_GutMetaNet_Annotations.tsv
-│   ├── Merged_GutMetaNet_MGE.tsv
-│   └── DB.representative_genome.gff/
-│
-├── scripts/
-│   ├── 01_Functional_Galaxy_Map.R
-│   ├── 02_Regenerative_Cooccurrence_Network.R
-│   ├── 03_Regenerative_Potential_Gradient.R
-│   └── utilities.R
-│
-├── figures/
-│   ├── Fig1_FunctionalGalaxyMap.png
-│   ├── Fig2_Regenerative_Cooccurrence_Heatmap.png
-│   ├── Fig3_Regenerative_GradientMap.png
-│   └── featured_image.png
-│
-├── supplementary/
-│   ├── KO_list_regeneration.csv
-│   ├── Module_Associations.csv
-│   ├── PCA_Loadings.csv
-│   └── metadata_summary.tsv
-│
-├── README.md                    # Current file
-└── LICENSE
-```
-
----
-
 ## 🧩 Analyses Summary
 | Analysis | Focus | Output | Script |
 |-----------|--------|---------|---------|
